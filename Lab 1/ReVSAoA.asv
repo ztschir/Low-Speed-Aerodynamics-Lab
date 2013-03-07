@@ -1,0 +1,16 @@
+[Re1 Vtrue1] = getVtrueAndReManoLab1(0.48);
+[Re2 Vtrue2] = getVtrueAndReManoLab1(0.84);
+[Re3 Vtrue3] = getVtrueAndReManoLab1(1.38);
+
+AoADeattach = [17.2,18.3,19.5];
+AoAReattach = [13.9,15.3,16.0];
+
+Re = [Re1, Re2, Re3];
+Vtrue = [Vtrue1, Vtrue2, Vtrue3];
+
+plot(Re, AoADeattach,'-s', Re, AoAReattach, '-s');
+legend('Flow Seperation', 'Flow Reattachment');
+xlabel('Reynolds number');
+ylabel('Angle of Attack');
+title('
+

@@ -1,0 +1,56 @@
+clear all; clc;
+[p40 p50 p60 p70r1 p70r2 p80] = ...
+    textread('PressureDistribution.csv', '%f %f %f %f %f %f','delimiter', ',');
+
+radiusOfSphereAir = .216/2;
+    
+atmPres = [99218.4608040 99218.6540079 99217.8167888 99217.5833338 99217.2734019 99217.0157955];
+
+secArea = [0.000278091	0.001087144	0.002043162	0.002752745	0.003130306	...
+    0.003130306	0.002752745	0.002043162	0.001087144	0	-0.001087144...
+    -0.002043162	-0.002752745	-0.003130306	-0.003130306	...
+    -0.002752745	-0.002043162	-0.001087144	-0.000278091	...
+    -0.001087144	-0.002043162	-0.002752745	-0.003130306	...
+    -0.003130306	-0.002752745	-0.002043162	-0.001087144	0	...
+    0.001087144	0.002043162	0.002752745	0.003130306	0.003130306	...
+    0.002752745	0.002043162	0.001087144];
+
+sumSecArea = 0.036331524;
+
+densityOfAir = 1.225; %kg/m^3
+viscosityOfAir = 1.78e-5; %kg/m*s
+
+drag(1) = sum((p40 - atmPres(1)).*secArea');
+drag(2) = sum((p50 - atmPres(2)).*secArea');
+drag(3) = sum((p60 - atmPres(3)).*secArea');
+drag(4) = sum((p70r1 - atmPres(4)).*secArea');
+drag(5) = sum((p70r2 - atmPres(5)).*secArea');
+drag(6) = sum((p80 - atmPres(6)).*secArea');
+
+coeffDrag(1) = drag(1)/((p40(1) - atmPres(1))*sumSecArea);
+coeffDrag(2) = drag(2)/((p50(1) - atmPres(2))*sumSecArea);
+coeffDrag(3) = drag(3)/((p60(1) - atmPres(3))*sumSecArea);
+coeffDrag(4) = drag(4)/((p70r1(1) - atmPres(4))*sumSecArea);
+coeffDrag(5) = drag(5)/((p70r2(1) - atmPres(5))*sumSecArea);
+coeffDrag(6) = drag(6)/((p80(1) - atmPres(6))*sumSecArea);
+
+
+Re(1) = ReynoldsNumber(calculatedVelocity(p40(1)-atmPres(1), densityOfAir), radiusOfSphereAir*2, densityOfAir, viscosityOfAir);
+Re(2) = ReynoldsNumber(calculatedVelocity(p50(1)-atmPres(2), densityOfAir), radiusOfSphereAir*2, densityOfAir, viscosityOfAir);
+Re(3) = ReynoldsNumber(calculatedVelocity(p60(1)-atmPres(3), densityOfAir), radiusOfSphereAir*2, densityOfAir, viscosityOfAir);
+Re(4) = ReynoldsNumber(calculatedVelocity(p70r1(1)-atmPres(4), densityOfAir), radiusOfSphereAir*2, densityOfAir, viscosityOfAir);
+Re(5) = ReynoldsNumber(calculatedVelocity(p70r2(1)-atmPres(5), densityOfAir), radiusOfSphereAir*2, densityOfAir, viscosityOfAir);
+Re(6) = ReynoldsNumber(calculatedVelocity(p80(1)-atmPres(6), densityOfAir), radiusOfSphereAir*2, densityOfAir, viscosityOfAir);
+
+
+
+figure('Name', 'Re vs. DragCoeff');
+plot(Re, coeffDrag, 'o');
+xlabel('Reynolds Number');
+ylabel('Drag Coefficient');
+
+
+% figure('Name', 'LogLog Re vs. DragCoeff');
+% loglog(Re, coeffDrag);
+% xlabel('Log Reynolds Number');
+% ylabel('Log Drag Coefficient');

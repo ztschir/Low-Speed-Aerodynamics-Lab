@@ -1,0 +1,54 @@
+function [coeffOfDrag] = wakeProfileMeasurements(linearFitPoly)
+
+chordLength = 0.2127; %Meters
+dy = 0.002; %Meters
+samplesToOmit = [21,22,31,32];
+densityOfAir = 1.2250; %kg/m^3
+viscosity = 1.78e-5; %kg/m*s
+measuredStaticPressure = 99214.2183576;
+measuredStagPressure = 99263.27216;
+freeStreamVelocity = ...
+    calculatedVelocity(measuredStagPressure-measuredStaticPressure, densityOfAir);
+
+[sample stagnationPressure, staticPressure, Voltage] = ...
+    textread('WakeProfile.txt', '%d %f %f %f');
+gagePressure = stagnationPressure - staticPressure;
+
+k = 1;
+for i = 1:size(sample)
+    if sum(i == samplesToOmit) == 0
+        trueVelocity(k) = calculatedVelocity(gagePressure(i), densityOfAir);
+        Re(k) = reynoldsNumber(trueVelocity(k),chordLength, densityOfAir, viscosity);
+        
+        hotWireVelocity(k) = polyval(linearFitPoly, Voltage(i));
+        normalStagPres(k) = stagnationPressure(i)/measuredStaticPressure;
+        normalStaticPres(k) = staticPressure(i)/measuredStaticPressure;
+        k = k + 1;
+    end
+end
+
+dY = ((1:size(trueVelocity'))*.002)/chordLength; % normalized
+
+
+figure('Name', 'Wake Profile Pressures at 11 degrees')
+plot(normalStagPres, dY, '-o', normalStaticPres, dY);
+xlabel('Normalized Pressure (P/Patm)');
+ylabel('Normalized dY (y/c)');
+title('Wake Profile Pressures at an 11 degree Angle of Attack');
+legend('Stagnation Pressure', 'Static Pressure', 'Location', 'South');
+
+figure('Name', 'Wake Profile Velocity at 11 degrees without Hotwire Data');
+plot(trueVelocity/freeStreamVelocity, dY);
+xlabel('Normalized Velocity (V/Vfree)');
+ylabel('Normalized dY (y/c)');
+title('Wake Profile at an 11 degree Angle of Attack');
+
+figure('Name', 'Wake Profile Velocity at 11 degrees');
+plot(trueVelocity/freeStreamVelocity, 1:size(trueVelocity'), ...
+    hotWireVelocity/freeStreamVelocity, 1:size(hotWireVelocity'), '-o');
+legend('Pitot Static measurement', 'Hotwire measurement'); 
+xlabel('Normalized Velocity (V/Vfree)');
+ylabel('Normalized dY (y/c)');
+title('Wake Profile at an 11 degree Angle of Attack');
+
+coeffOfDrag = 2*sum(trueVelocity/freeStreamVelocity - (trueVelocity/freeStreamVelocity).^2)*(dy/chordLength)

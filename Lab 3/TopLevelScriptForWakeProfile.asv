@@ -1,0 +1,107 @@
+%TopLevelScriptForWakeProfile
+
+clear all; clc;
+
+%calculations
+[Cd(1), Re(1), normalVel800x50, normalPos800x50] = ...
+    wakeProfileMeasurement('800' ,'50', '800rpm50fts.txt');
+[Cd(2), Re(2), normalVel800x70, normalPos800x70] = ...
+    wakeProfileMeasurement('800' ,'70', '800rpm70fts.txt');
+
+[Cd(3), Re(3), normalVel1000x50, normalPos1000x50] = ...
+    wakeProfileMeasurement('1000' ,'50', '1000rpm50fts.txt');
+[Cd(4), Re(4), normalVel1000x70, normalPos1000x70] = ...
+    wakeProfileMeasurement('1000' ,'70', '1000rpm70fts.txt');
+
+[Cd(5), Re(5), normalVel1200x50, normalPos1200x50] = ...
+    wakeProfileMeasurement('1200' ,'50', '1200rpm50fts.txt');
+[Cd(6), Re(6), normalVel1200x70, normalPos1200x70] = ...
+    wakeProfileMeasurement('1200' ,'70', '1200rpm70fts.txt');
+
+
+Re
+
+%Profiles grouped by RPM
+
+figure('Name', 'Wake Profile Tested at 800 RPM');
+hold on;
+plot(normalVel800x50, normalPos800x50, '-o');
+p = plot(normalVel800x70, normalPos800x70, '--o');
+xlabel('Normalized Velocity (V/Vfree)');
+ylabel('Normalized dY (y/c)');
+title('Wake Profile Tested at 800 RPM');
+set(p,'Color','red');
+legend('2.9e5 Re', '4.2e5 Re');
+
+figure('Name', 'Wake Profile Tested at 1000 RPM');
+hold on;
+plot(normalVel1000x50, normalPos1000x50, '-o');
+p = plot(normalVel1000x70, normalPos1000x70, '--o');
+xlabel('Normalized Velocity (V/Vfree)');
+ylabel('Normalized dY (y/c)');
+title('Wake Profile Tested at 1000 RPM');
+set(p,'Color','red');
+legend('2.9e5 Re', '4.2e5 Re');
+
+figure('Name', 'Wake Profile Tested at 1200 RPM');
+hold on;
+plot(normalVel1200x50, normalPos1200x50, '-o');
+p = plot(normalVel1200x70, normalPos1200x70, '--o');
+xlabel('Normalized Velocity (V/Vfree)');
+ylabel('Normalized dY (y/c)');
+title('Wake Profile Tested at 1200 RPM');
+set(p,'Color','red');
+legend('2.9e5 Re', '4.2e5 Re');
+
+
+
+
+%Profiles grouped by Freestream Velocity
+
+figure('Name', 'Wake Profile Tested at a Reynolds number of 2.9e5');
+hold on;
+plot(normalVel800x50, normalPos800x50, '-o');
+p = plot(normalVel1000x50, normalPos1000x50, '-o');
+q = plot(normalVel1200x50, normalPos1200x50, '-o');
+xlabel('Normalized Velocity (V/Vfree)');
+ylabel('Normalized dY (y/c)');
+title('Wake Profile Tested at a Reynolds number of 2.9e5');
+set(p,'Color','red');
+set(q,'Color','green');
+legend('800 RPM', '1000 RPM', '1200 RPM');
+
+figure('Name', 'Wake Profile Tested at a Reynolds number of 4.2e5');
+hold on;
+plot(normalVel800x70, normalPos800x70, '-o');
+p = plot(normalVel1000x70, normalPos1000x70, '-o');
+q = plot(normalVel1200x70, normalPos1200x70, '-o');
+xlabel('Normalized Velocity (V/Vfree)');
+ylabel('Normalized dY (y/c)');
+title('Wake Profile Tested at a Reynolds number of 4.2e5');
+set(p,'Color','red');
+set(q,'Color','green');
+legend('800 RPM', '1000 RPM', '1200 RPM');
+
+
+RPMValues = [800 1000 1200];
+firstGraph = [Cd(1) Cd(3) Cd(5)];
+secondGraph = [Cd(2) Cd(4) Cd(6)];
+
+fprintf('Coefficient of Drag at 800RPM and 50ft/s: %f\n', Cd(1));
+fprintf('Coefficient of Drag at 1000RPM and 50ft/s: %f\n', Cd(3));
+fprintf('Coefficient of Drag at 1200RPM and 50ft/s: %f\n', Cd(5));
+fprintf('Coefficient of Drag at 800RPM and 70ft/s: %f\n', Cd(2));
+fprintf('Coefficient of Drag at 1000RPM and 70ft/s: %f\n', Cd(4));
+fprintf('Coefficient of Drag at 1200RPM and 70ft/s: %f\n', Cd(6));
+
+figure('Name', 'Coefficient of drag vs RPM at 50ft/s');
+plot(RPMValues, firstGraph,'-o');
+xlabel('Revolutions Per Minute');
+ylabel('Coefficient of Drag');
+title('Coefficient of drag vs Reynolds ');
+
+figure('Name', 'Coefficient of drag vs RPM at a Reynolds number of 4.2e5');
+plot(RPMValues, secondGraph,'-o');
+xlabel('Revolutions Per Minute');
+ylabel('Coefficient of Drag');
+title('Coefficient of drag vs Reynolds number');

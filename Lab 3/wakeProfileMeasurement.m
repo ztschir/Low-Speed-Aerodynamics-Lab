@@ -1,0 +1,46 @@
+function [coeffOfDrag, ReFreeStream, normalVel, normalPos] = ...
+    wakeProfileMeasurement(rotationSpeed, freeStreamVelocityEst, wakeProf)
+
+
+radius = 0.0889; %meters
+chordLength = 0.2794; %meters
+dy = 0.00635; %meters
+lengthFromCenter = 0.03048; %meters
+densityOfAir = 1.2250; %kg/m^3
+viscosity = 1.78e-5; %kg/m*s
+
+Y = 1:26;
+
+[avgPressure] = textread(wakeProf, '%f');
+
+stagPressure = avgPressure(1);
+staticPressure = avgPressure(32);
+freeStreamVelocity = ...
+    calculatedVelocity(stagPressure-staticPressure, densityOfAir);
+ReFreeStream = reynoldsNumber(freeStreamVelocity,chordLength, ...
+            densityOfAir, viscosity);
+
+for i = 5:28   
+    wakeProfilePres(i-1) = avgPressure(i-3);
+end
+
+extraPolateFunc = polyfit(4:6, [wakeProfilePres(4) wakeProfilePres(5) ...
+    wakeProfilePres(6)] ,1);
+
+for i = 1:3
+    wakeProfilePres(i) = polyval(extraPolateFunc, (i));
+end
+
+for i = 1:26
+        trueVelocity(i) = calculatedVelocity(wakeProfilePres(i) - ...
+            staticPressure , densityOfAir);
+        Re(i) = reynoldsNumber(trueVelocity(i),chordLength, ...
+            densityOfAir, viscosity);
+end
+
+normalVel = trueVelocity/freeStreamVelocity;
+normalPos = -1.*((Y.*dy)/radius);
+
+
+coeffOfDrag = (4/((dy*length(Y))^2))*sum((trueVelocity/freeStreamVelocity - ...
+    (trueVelocity/freeStreamVelocity).^2).*(dy.*Y))*(dy/radius);

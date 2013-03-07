@@ -1,0 +1,21 @@
+clear all; clc;
+[position Uvel Vvel] = ...
+    textread('WaterVelocity.csv', '%f %f %f','delimiter', ',');
+
+diameterOfSphereWater = .0665 * 2 * 100; %mm
+maxDistanceMeasurment = -5.2; %mm
+densityOfWater = 998.2071; %kg/m^3
+viscosityOfWater = 1.002e-3; %Ns/m^2
+
+Re = densityOfWater.*Vvel.*diameterOfSphereWater/viscosityOfWater;
+
+freeStreamVel = max(Vvel);
+normalPos = position/maxDistanceMeasurment;
+normalVel = Vvel/freeStreamVel;
+
+normalVel(end+1) = 0;
+normalPos(end+1) = 0;
+
+plot(normalPos, normalVel);
+ylabel('Normalized Velocity (u(y)/U)');
+xlabel('Normalized Position (y/Y)');

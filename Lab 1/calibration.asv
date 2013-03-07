@@ -1,0 +1,20 @@
+function [linearFitPoly] = hotWireCalibration()
+[sample stagnationPressure, staticPressure, Voltage] = ...
+    textread('Calibration.txt', '%d %f %f %f');
+gagePressure = stagnationPressure - staticPressure;
+
+gagePressureInPSF = 0.02088545632547*gagePressure; %convertion to lb/ft^2
+
+for i = 1:size(sample)
+    [Re(i) trueVelocity(i)] = getVtrueAndReGageLab1(gagePressureInPSF(i));
+end
+
+figure('Name', 'Hot Wire Calibration');
+linearFitPoly = polyfit(trueVelocity', Voltage, 1);
+linearFitVal = polyval(linearFitPoly, trueVelocity);
+plot(trueVelocity,Voltage,'o', trueVelocity, linearFitVal);
+
+le
+xlabel('Velocity (ft/s)');
+ylabel('Voltage (V)');
+title('Hot Wire Calibration');
